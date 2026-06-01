@@ -1,0 +1,95 @@
+using System;
+using UnityEngine.EventSystems;
+using UnityEngine;
+
+public class GridCell : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler {
+    /// <summary>
+    ///  Grid Cell - A physical space within the Buildgrid. 
+    /// Knows it's position, and what object it's holding. 
+    /// Can be naturally obstructed to prevent building
+    /// </summary>
+
+
+
+    public GameObject gridGraphics;
+    public Vector2Int gridPos; // Position within the grid
+    // Colors
+    public Material grey;
+    public Material red;
+    public Material green;
+    public Material white;
+    public GridCellColor currentColor;
+
+
+    // Logic
+    BoxCollider clickDetection;
+    public GameObject attachedObject;
+    public bool isNaturallyObstructed = false; // prevents cell interaction
+    public bool isObstructed = false; // prevents cell interaction
+    public GridManager gridManager;
+
+    void Awake() {
+        currentColor = GridCellColor.Grey;
+        clickDetection = GetComponent<BoxCollider>();
+    }
+    // When Build Mode starts, show graphics & set color
+    // - Grey: Avaliable
+    // - Red: Naturally obstructed
+    public void BuildModeActive(Boolean active) {
+        gridGraphics.SetActive(active);
+        clickDetection.enabled = active && !isObstructed;
+        if (isNaturallyObstructed || isObstructed) {
+            ChangeColor(GridCellColor.Red);
+        }
+        else {
+            ChangeColor(GridCellColor.Grey);
+
+        }
+    }
+
+    public void SetObstructed(bool obstructed) {
+        gridGraphics.SetActive(!obstructed);
+        clickDetection.enabled = !obstructed;
+    }
+    // Mouse Activity - forward to GridManager for operation, apply response color
+    public void OnPointerClick(PointerEventData eventData) {
+        log("..Clicked..");
+        gridManager.CellWasClicked(this);
+    }
+    public void OnPointerEnter(PointerEventData eventData) {
+        log("Hovering...");
+        gridManager.CellWasEntered(this);
+    }
+    public void OnPointerExit(PointerEventData eventData) {
+        log("...stopped Hovering.");
+        gridManager.CellWasExited();
+    }
+
+    public void ChangeColor(GridCellColor color) {
+        Material toSet = null;
+        switch (color) {
+            case GridCellColor.Grey:
+                toSet = grey;
+                break;
+            case GridCellColor.Red:
+                toSet = red;
+                break;
+            case GridCellColor.Green:
+                toSet = green;
+                break;
+            case GridCellColor.White:
+                toSet = white;
+                break;
+        }
+        if (toSet == null) {
+            log("Tried to change to unknown color! " + color);
+            return;
+        }
+        currentColor = color;
+        gridGraphics.GetComponent<Renderer>().material = toSet;
+    }
+
+    void log(String message) {
+        Debug.Log($"Cell ({gridPos[0]}, {gridPos[1]}): {message}");
+    }
+}
