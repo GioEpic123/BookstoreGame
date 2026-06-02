@@ -24,6 +24,7 @@ public class GridCell : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
     // Logic
     BoxCollider clickDetection;
     public GameObject attachedObject;
+    public BuildOption attachedObjectBuildOption;
     public bool isNaturallyObstructed = false; // prevents cell interaction
     public bool isObstructed = false; // prevents cell interaction
     public GridManager gridManager;
@@ -31,6 +32,7 @@ public class GridCell : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
     void Awake() {
         currentColor = GridCellColor.Grey;
         clickDetection = GetComponent<BoxCollider>();
+        attachedObjectBuildOption = BuildOption.None;
     }
     // When Build Mode starts, show graphics & set color
     // - Grey: Avaliable

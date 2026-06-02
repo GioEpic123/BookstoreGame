@@ -59,7 +59,7 @@ public class GridManager : MonoBehaviour {
         currentActiveCell = cell;
 
         if (isEraserMode) {
-            bool canErase = cell.attachedObject != null;
+            bool canErase = cell.isObstructed;
             HighlightSelection(canErase ? GridCellColor.Green : GridCellColor.Red);
         }
         else if (currentItem != BuildOption.None) {
@@ -82,7 +82,7 @@ public class GridManager : MonoBehaviour {
     // Returns color cell should display as a result of operation
     public void CellWasClicked(GridCell cell) {
         if (isEraserMode) {
-            if (cell.attachedObject == null) {
+            if (!cell.isObstructed) {
                 HighlightSelection(GridCellColor.Red);
             }
             else {
@@ -93,7 +93,7 @@ public class GridManager : MonoBehaviour {
         }
         else if (currentItem != BuildOption.None) {
 
-            if (cell.attachedObject) {
+            if (cell.isObstructed) {
                 Debug.Log("Already has an Object Attached!");
                 HighlightSelection(GridCellColor.Red);
             }
@@ -120,14 +120,24 @@ public class GridManager : MonoBehaviour {
     //
 
     public void EraseItemInCell(GridCell cell) {
+
+        //First, find what our selection is here
+        BuildOption option = cell.attachedObjectBuildOption;
+        currentItem = option;
+        UpdateSelection(cell.gridPos);
         Destroy(cell.attachedObject);
-        // Figure out how to remove item from the other cells it's connected to
-        cell.attachedObject = null;
+        foreach (GridCell selCell in currentSelection) {
+            selCell.attachedObject = null;
+            selCell.SetObstructed(false);
+        }
+        currentItem = BuildOption.None;
+        currentSelection = new List<GridCell>();
+        currentSelection.Add(cell);
     }
 
     // See if adding at current selection is possible
     public Boolean CanAddItemToCell(GridCell cell) {
-        if (cell.attachedObject != null) {
+        if (cell.isObstructed) {
             Debug.Log("cell has an item");
             return false;
         }
@@ -139,7 +149,7 @@ public class GridManager : MonoBehaviour {
         }
 
         foreach (GridCell auxCell in currentSelection) {
-            if (auxCell.attachedObject != null) {
+            if (auxCell.isObstructed) {
                 return false;
             }
         }
@@ -169,6 +179,7 @@ public class GridManager : MonoBehaviour {
         RotateInstanceToMatchBuildDirection(instance);
         cell.attachedObject = instance;
         cell.attachedObject.transform.localPosition = Vector3.zero;
+        cell.attachedObjectBuildOption = currentItem;
         currentItem = BuildOption.None; // Clear held item
         return true;
     }
@@ -176,34 +187,51 @@ public class GridManager : MonoBehaviour {
     // Use the 'grid algo' to get the currently selected cells.
     // Add them to currentSelection
     public void UpdateSelection(Vector2Int cellPos) {
-        // Selection always grows to the left and up from the origin cell
         // Build direction starts out South
 
-        //     [c]    // 1x1 object, S or N
+        // [x] [x]
+        // [x] [c]     // 2x2 object, S
 
-        // [x] [c]    // 2x1 object, S or N
+        // [x] [c]
+        // [x] [x]     // 2x2 object, E
 
-        // [x]
-        // [c]        // 2x1 object, E or W
+        // [c] [x]
+        // [x] [x]     // 2x2 object, N
 
         // [x] [x]
-        // [x] [c]     // 2x2 object, NSE or W
+        // [c] [x]     // 2x2 object, W
 
         Vector2Int dimensions = currentItem.Dimensions();
         int verticalSize = -1;
         int horizontalSize = -1;
+        int verticalSearch = 0;
+        int horizontalSearch = 0;
 
         // Set search directions
         switch (buildDirection) {
             case BuildModeDirection.North:
+                horizontalSize = dimensions[0];
+                verticalSize = dimensions[1];
+                verticalSearch = -1;
+                horizontalSearch = 1;
+                break;
             case BuildModeDirection.South:
                 horizontalSize = dimensions[0];
                 verticalSize = dimensions[1];
+                verticalSearch = 1;
+                horizontalSearch = -1;
                 break;
             case BuildModeDirection.East:
+                verticalSize = dimensions[0];
+                horizontalSize = dimensions[1];
+                verticalSearch = -1;
+                horizontalSearch = -1;
+                break;
             case BuildModeDirection.West:
                 verticalSize = dimensions[0];
                 horizontalSize = dimensions[1];
+                verticalSearch = 1;
+                horizontalSearch = 1;
                 break;
         }
 
@@ -212,8 +240,8 @@ public class GridManager : MonoBehaviour {
         for (int vertical = 0; vertical < verticalSize; vertical++) {
             for (int horizontal = 0; horizontal < horizontalSize; horizontal++) {
                 // We always grow up and to the left of the cursor cell
-                int x = cellPos[0] + (horizontal * -1);
-                int y = cellPos[1] + vertical;
+                int x = cellPos[0] + (horizontal * horizontalSearch);
+                int y = cellPos[1] + (vertical * verticalSearch);
 
                 if (x < 0 || x >= grid.Length || y < 0 || y >= grid[x].Length) {
                     // out of bounds
