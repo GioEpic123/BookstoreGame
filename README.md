@@ -4,7 +4,7 @@ A real-time bookstore management game about designing a store, learning customer
 
 Success comes from how well the player understands customer archetypes, how effectively the store layout influences behavior, and how quickly they can match customers to books they’ve previously learned during the stock phase.
 
-Full doc avaliable here:https: //docs.google.com/document/d/1-gzbyUpBD29RKXa04NJESLhzMI5w8RUwrCBQWyBUXpw/edit?usp=sharing
+Full doc avaliable here: https://docs.google.com/document/d/1-gzbyUpBD29RKXa04NJESLhzMI5w8RUwrCBQWyBUXpw/edit?usp=sharing
 
 ---
 
