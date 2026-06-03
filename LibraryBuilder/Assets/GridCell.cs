@@ -50,8 +50,9 @@ public class GridCell : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
     }
 
     public void SetObstructed(bool obstructed) {
-        gridGraphics.SetActive(!obstructed);
-        clickDetection.enabled = !obstructed;
+        isObstructed = obstructed;
+        //gridGraphics.SetActive(!obstructed);
+        //clickDetection.enabled = !obstructed;
     }
     // Mouse Activity - forward to GridManager for operation, apply response color
     public void OnPointerClick(PointerEventData eventData) {

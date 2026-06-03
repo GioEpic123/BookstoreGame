@@ -131,8 +131,9 @@ public class GridManager : MonoBehaviour {
             selCell.SetObstructed(false);
         }
         currentItem = BuildOption.None;
-        currentSelection = new List<GridCell>();
-        currentSelection.Add(cell);
+        currentSelection = new List<GridCell> {
+            cell
+        };
     }
 
     // See if adding at current selection is possible
@@ -151,6 +152,9 @@ public class GridManager : MonoBehaviour {
         foreach (GridCell auxCell in currentSelection) {
             if (auxCell.isObstructed) {
                 return false;
+            }
+            else {
+                Debug.Log($"Cell {auxCell} was not obstructed, {auxCell.gridPos}");
             }
         }
 

@@ -26,6 +26,7 @@ public class BuildGrid : MonoBehaviour {
     // TODO: configure these on load (or on create)
     public void ObstructCell(Vector2Int gridPos) {
         mainGrid[gridPos.x][gridPos.y].isNaturallyObstructed = true;
+        mainGrid[gridPos.x][gridPos.y].isObstructed = true;
     }
 
     void SetGridCellVisibility(Boolean active) {
