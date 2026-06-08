@@ -1,3 +1,13 @@
+
+
+<img width="1970" height="1250" alt="BookstoreBuildingDemo" src="https://github.com/user-attachments/assets/f32449cf-c157-4a37-b179-2ba8843215ba" />
+
+Latest Upate 6/2: Above is a demo of the build grid working with objects of various sizes!
+After some code cleanup & bug fixes, we shall move onto saving & loading the build grid to file.
+
+Then we'll start working on some of the more advanced functionality!
+
+
 # 📚 Untitled Bookstore Game
 
 A real-time bookstore management game about designing a store, learning customer preferences, and making fast recommendations under pressure. The game alternates between a preparation phase (where players stock books and design their layout) and a live store phase (where customers enter, browse, request recommendations, and make purchases in real time).
