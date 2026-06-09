@@ -261,9 +261,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4c3597fa0164f42b7d152537e9e724, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 963194225}
   buildGrid: {fileID: 1515065117824284067, guid: 02f41fdca8d267d4e8e0bb47b74268d6, type: 3}
-  ui: {fileID: 0}
+  ui: {fileID: 716831306}
+  mainCam: {fileID: 963194227}
 --- !u!4 &264052799
 Transform:
   m_ObjectHideFlags: 0

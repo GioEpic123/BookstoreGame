@@ -10,20 +10,22 @@ public class GridManager : MonoBehaviour {
     bool inBuildMode = false;
     public bool isEraserMode = false;
     public BuildGrid parentGrid;
-    BuildOption currentItem = BuildOption.None; // Null in eraser mode
+    BuildOption currentBuildMode = BuildOption.None; // Null in eraser mode
     // TODO: Scroll to rotate!
     BuildModeDirection buildDirection = BuildModeDirection.South; // All items face the camera by default
     List<GridCell> currentSelection = new List<GridCell>();
     GridCell currentActiveCell;
+
+    GridItem hologram;
 
 
     public GridManager(BuildGrid mama) {
         parentGrid = mama; //awe
     }
 
-    public Boolean ToggleBuildMode() {
+    public bool ToggleBuildMode() {
         inBuildMode = !inBuildMode;
-        currentItem = BuildOption.None;
+        currentBuildMode = BuildOption.None;
         return inBuildMode;
     }
 
@@ -40,14 +42,43 @@ public class GridManager : MonoBehaviour {
 
     public void SetBuildOption(BuildOption option) {
         log("Selected build option: " + option);
-        currentItem = option;
+        if (hologram != null) {
+            hologram.Cleanup();
+            hologram = null;
+        }
+        currentBuildMode = option;
         isEraserMode = false;
+        if (option != BuildOption.None) {
+            MakeGridItem(option);
+        }
     }
 
     public void EnableEraserMode() {
         log("Entering eraser mode...");
-        currentItem = BuildOption.None;
+        if (hologram != null) {
+            hologram.Cleanup();
+            hologram = null;
+        }
+        currentBuildMode = BuildOption.None;
         isEraserMode = true;
+    }
+
+    public void MakeGridItem(BuildOption option) {
+        var gameObject = new GameObject();
+        gameObject.AddComponent<GridItem>();
+        hologram = gameObject.GetComponent<GridItem>();
+        hologram.MakeInstance(option);
+    }
+
+    public void MoveHolo() {
+        Debug.Log("Moving holo!");
+        if (currentActiveCell == null) {
+            hologram.SetVisible(false);
+            return;
+        }
+        hologram.SetVisible(true);
+        RotateInstanceToMatchBuildDirection(hologram.instance);
+        hologram.instance.transform.position = currentActiveCell.transform.position;
     }
 
     // MOUSE ACTIVITY
@@ -62,7 +93,9 @@ public class GridManager : MonoBehaviour {
             bool canErase = cell.isObstructed;
             HighlightSelection(canErase ? GridCellColor.Green : GridCellColor.Red);
         }
-        else if (currentItem != BuildOption.None) {
+        else if (currentBuildMode != BuildOption.None) {
+            MoveHolo();
+
             if (cell.attachedObject) {
                 HighlightSelection(GridCellColor.Red);
             }
@@ -91,7 +124,7 @@ public class GridManager : MonoBehaviour {
                 HighlightSelection(GridCellColor.Grey);
             }
         }
-        else if (currentItem != BuildOption.None) {
+        else if (currentBuildMode != BuildOption.None) {
 
             if (cell.isObstructed) {
                 Debug.Log("Already has an Object Attached!");
@@ -113,6 +146,7 @@ public class GridManager : MonoBehaviour {
         currentActiveCell = null;
         HighlightSelection(GridCellColor.Grey);
         ClearSelection();
+        MoveHolo();
     }
 
     //
@@ -123,14 +157,14 @@ public class GridManager : MonoBehaviour {
 
         //First, find what our selection is here
         BuildOption option = cell.attachedObjectBuildOption;
-        currentItem = option;
+        currentBuildMode = option;
         UpdateSelection(cell.gridPos);
         Destroy(cell.attachedObject);
         foreach (GridCell selCell in currentSelection) {
             selCell.attachedObject = null;
             selCell.SetObstructed(false);
         }
-        currentItem = BuildOption.None;
+        currentBuildMode = BuildOption.None;
         currentSelection = new List<GridCell> {
             cell
         };
@@ -144,7 +178,7 @@ public class GridManager : MonoBehaviour {
         }
 
         // some cells out of bounds
-        if (currentSelection.Count < currentItem.Size()) {
+        if (currentSelection.Count < currentBuildMode.Size()) {
             Debug.Log("selection too small");
             return false;
         }
@@ -152,9 +186,6 @@ public class GridManager : MonoBehaviour {
         foreach (GridCell auxCell in currentSelection) {
             if (auxCell.isObstructed) {
                 return false;
-            }
-            else {
-                Debug.Log($"Cell {auxCell} was not obstructed, {auxCell.gridPos}");
             }
         }
 
@@ -173,7 +204,8 @@ public class GridManager : MonoBehaviour {
         // ! Cells will STILL NEED to know that they're obstructed (maybe home cell will know it's got an attached object?)
 
 
-        GameObject instance = Instantiate(BuildModeHelpers.GetPrefabForOption(currentItem), cell.transform);
+        // TODO: URGENT! This doesn't work with holo code, need to refactor
+        GameObject instance = Instantiate(BuildModeHelpers.GetPrefabForOption(currentBuildMode), cell.transform);
 
         // All selection cells get obstructed
         foreach (GridCell selectionCell in currentSelection) {
@@ -183,8 +215,8 @@ public class GridManager : MonoBehaviour {
         RotateInstanceToMatchBuildDirection(instance);
         cell.attachedObject = instance;
         cell.attachedObject.transform.localPosition = Vector3.zero;
-        cell.attachedObjectBuildOption = currentItem;
-        currentItem = BuildOption.None; // Clear held item
+        cell.attachedObjectBuildOption = currentBuildMode;
+        currentBuildMode = BuildOption.None; // Clear held item
         return true;
     }
 
@@ -205,7 +237,7 @@ public class GridManager : MonoBehaviour {
         // [x] [x]
         // [c] [x]     // 2x2 object, W
 
-        Vector2Int dimensions = currentItem.Dimensions();
+        Vector2Int dimensions = currentBuildMode.Dimensions();
         int verticalSize = -1;
         int horizontalSize = -1;
         int verticalSearch = 0;
@@ -262,6 +294,8 @@ public class GridManager : MonoBehaviour {
         foreach (GridCell cell in currentSelection) {
             cell.ChangeColor(color);
         }
+        // TODO:
+        hologram.SetHoloColor(); // NO OP! Implement
     }
 
     public void ClearSelection() {
