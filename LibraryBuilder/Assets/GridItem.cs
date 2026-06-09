@@ -48,6 +48,7 @@ public class GridItem : MonoBehaviour {
         var collider = instance.GetComponent<Collider>();
         if (collider != null) {
             collider.enabled = hit;
+
         }
     }
 

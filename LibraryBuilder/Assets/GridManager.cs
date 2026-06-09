@@ -205,6 +205,7 @@ public class GridManager : MonoBehaviour {
 
 
         // TODO: URGENT! This doesn't work with holo code, need to refactor
+        // Instead of making a new one, just use the holo object?? 
         GameObject instance = Instantiate(BuildModeHelpers.GetPrefabForOption(currentBuildMode), cell.transform);
 
         // All selection cells get obstructed
