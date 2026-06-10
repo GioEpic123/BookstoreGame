@@ -10,24 +10,22 @@ public class GridCell : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
     /// </summary>
 
 
-
+    /// Grid Cell
     public GameObject gridGraphics;
     public Vector2Int gridPos; // Position within the grid
-    // Colors
-    public Material grey;
-    public Material red;
-    public Material green;
-    public Material white;
     public GridCellColor currentColor;
-
+    public GridManager gridManager;
 
     // Logic
     BoxCollider clickDetection;
-    public GameObject attachedObject;
-    public BuildOption attachedObjectBuildOption;
     public bool isNaturallyObstructed = false; // prevents cell interaction
     public bool isObstructed = false; // prevents cell interaction
-    public GridManager gridManager;
+
+    // Grid Item
+    public GameObject attachedObject;
+    public BuildOption attachedObjectBuildOption;
+    public BuildModeDirection attachedObjectDirection;
+
 
     void Awake() {
         currentColor = GridCellColor.Grey;
@@ -69,27 +67,8 @@ public class GridCell : MonoBehaviour, IPointerClickHandler, IPointerEnterHandle
     }
 
     public void ChangeColor(GridCellColor color) {
-        Material toSet = null;
-        switch (color) {
-            case GridCellColor.Grey:
-                toSet = grey;
-                break;
-            case GridCellColor.Red:
-                toSet = red;
-                break;
-            case GridCellColor.Green:
-                toSet = green;
-                break;
-            case GridCellColor.White:
-                toSet = white;
-                break;
-        }
-        if (toSet == null) {
-            log("Tried to change to unknown color! " + color);
-            return;
-        }
         currentColor = color;
-        gridGraphics.GetComponent<Renderer>().material = toSet;
+        gridGraphics.GetComponent<Renderer>().material = BuildModeHelpers.GetMaterialForGridCellColor(color);
     }
 
     void log(String message) {

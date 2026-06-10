@@ -261,9 +261,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4c3597fa0164f42b7d152537e9e724, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 963194225}
   buildGrid: {fileID: 1515065117824284067, guid: 02f41fdca8d267d4e8e0bb47b74268d6, type: 3}
-  ui: {fileID: 0}
+  ui: {fileID: 716831306}
+  mainCam: {fileID: 963194227}
+  grey: {fileID: 2100000, guid: 92bed78c58487064d8a1a476539ca443, type: 2}
+  red: {fileID: 2100000, guid: d52962dcd75982b40a951f162e2f92dd, type: 2}
+  green: {fileID: 2100000, guid: ef326b374f639ca4da51599b225f6e9e, type: 2}
+  white: {fileID: 2100000, guid: 283ad22315ff66e43a1a045f448de329, type: 2}
 --- !u!4 &264052799
 Transform:
   m_ObjectHideFlags: 0

@@ -96,6 +96,11 @@ public class BuildGrid : MonoBehaviour {
         gridManager.EnableEraserMode();
     }
 
+    // Monobehavior wrappers for child classes
+    public void DestroyObject(GameObject obj) {
+        Destroy(obj);
+    }
+
     //
     // DEBUG
     //
