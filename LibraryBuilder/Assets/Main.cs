@@ -10,6 +10,13 @@ public class Main : MonoBehaviour {
 
     static Main instance;
 
+    // Materials
+    // TODO: find a better place to store these
+    public Material grey;
+    public Material red;
+    public Material green;
+    public Material white;
+
     public static Main Instance {
         get {
             if (instance == null) {

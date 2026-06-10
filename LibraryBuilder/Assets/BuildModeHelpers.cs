@@ -42,6 +42,21 @@ public static class BuildModeHelpers {
                 return null;
         }
     }
+
+    public static Material GetMaterialForGridCellColor(GridCellColor color) {
+        switch (color) {
+            case GridCellColor.Grey:
+                return Main.Instance.grey;
+            case GridCellColor.Red:
+                return Main.Instance.red;
+            case GridCellColor.Green:
+                return Main.Instance.green;
+            case GridCellColor.White:
+                return Main.Instance.white;
+        }
+        Debug.Log("[Helpers] Tried to obtain mat for unknown color! " + color);
+        return null;
+    }
 }
 
 // TODO: this is where we define the sizes of objects, I kinda hate it
